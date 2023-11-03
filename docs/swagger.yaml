@@ -1,0 +1,131 @@
+openapi: 3.0.0
+info:
+  title: Asset Management System
+  description: A simple API for managing assets.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /assets:
+    get:
+      summary: Get a list of assets
+      responses:
+        '200':
+          description: A list of assets
+          content:
+            application/json:
+              example:
+                - id: 1
+                  name: Laptop
+                  state: New
+                  cost: 999.99
+                  responsible_person: John Doe
+                  additional_information: Asset details
+                - id: 2
+                  name: Desktop Computer
+                  state: Used
+                  cost: 1299.99
+                  responsible_person: Jane Smith
+                  additional_information: Asset details
+      tags:
+        - Assets
+    post:
+      summary: Create a new asset
+      requestBody:
+        description: Asset data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the asset
+                state:
+                  type: string
+                  description: The state of the asset (e.g., New or Used)
+                cost:
+                  type: number
+                  format: float
+                  description: The cost of the asset
+                responsible_person:
+                  type: string
+                  description: The responsible person for the asset
+                additional_information:
+                  type: string
+                  description: Additional information about the asset
+            example:
+              name: Laptop
+              state: New
+              cost: 999.99
+              responsible_person: John Doe
+              additional_information: Asset details
+      responses:
+        '201':
+          description: The created asset
+          content:
+            application/json:
+              example:
+                id: 11
+                name: Laptop
+                state: New
+                cost: 999.99
+                responsible_person: John Doe
+                additional_information: Asset details
+      tags:
+        - Assets
+  /assets/{id}:
+    get:
+      summary: Get an asset by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the asset
+      responses:
+        '200':
+          description: An asset
+          content:
+            application/json:
+              example:
+                id: 1
+                name: Laptop
+                state: New
+                cost: 999.99
+                responsible_person: John Doe
+                additional_information: Asset details
+        '404':
+          description: Asset not found
+          content:
+            application/json:
+              example:
+                error: Asset not found
+      tags:
+        - Assets
+    delete:
+      summary: Delete an asset by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: The ID of the asset to delete
+      responses:
+        '204':
+          description: No content
+          content:
+            application/json:
+              example:
+                error: No content
+        '404':
+          description: Asset not found
+          content:
+            application/json:
+              example:
+                error: Asset not found
+      tags:
+        - Assets

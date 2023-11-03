@@ -1,0 +1,77 @@
+{
+    "openapi": "3.0.2",
+    "info": {
+        "title": "Asset Management System",
+        "version": "1.0.0",
+        "description": "This is a Swagger UI for our Asset Management API.\n\nError handling: Errors are presented using the HTTP status codes 400-599. The response includes a more detailed explanation about the error in the body.\n\n```\n{\n  \"error\": \"Clear explanation of the error that occurred\"\n}\n```\n\nGeneric API errors: These error responses can be returned by any of the described endpoints.\n\n| HTTP status  | Description |\n|---|---|\n| 400| Bad input parameters or an invalid request. More information can be found in the response body.\n| 401| The consumer does not have access to the requested resource or the provided token is not valid.\n| 404| The requested resource cannot be found, or the user does not have access to the resource.\n| 5XX| A server error has occurred while processing the request."
+    },
+    "paths": {
+        "/assets": {
+            "description": "Operations related to assets.",
+            "get": {
+                "tags": [
+                    "assets"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Returns a list of assets.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "object",
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer"
+                                            },
+                                            "name": {
+                                                "type": "string"
+                                            },
+                                            "state": {
+                                                "type": "string"
+                                            },
+                                            "cost": {
+                                                "type": "number"
+                                            },
+                                            "responsible_person": {
+                                                "type": "string"
+                                            },
+                                            "additional_information": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                },
+                                "examples": {
+                                    "List of assets": {
+                                        "value": [
+                                            {
+                                                "id": 1,
+                                                "name": "Laptop",
+                                                "state": "New",
+                                                "cost": 999.99,
+                                                "responsible_person": "John Doe",
+                                                "additional_information": "Asset details"
+                                            },
+                                            {
+                                                "id": 2,
+                                                "name": "Desktop Computer",
+                                                "state": "Used",
+                                                "cost": 1299.99,
+                                                "responsible_person": "Jane Smith",
+                                                "additional_information": "Asset details"
+                                            }
+                                        ]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "summary": "Get a list of all assets",
+                "description": "Returns a list of all assets in the API."
+            }
+        }
+    }
+}
