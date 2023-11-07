@@ -1,6 +1,20 @@
 const app = Vue.createApp({
     data() {
         return {
+            isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
+            currentRole: localStorage.getItem('role'), 
+            registrationSuccess: false,
+            showLogin: false,
+            registrationData: {
+                username: '',
+                password: ''
+            },
+            loginData: {
+                username: '',
+                password: ''
+            },
+            registrationError: '',
+            loginError: '',
             assets: [],
             newAsset: { number: '', name: '', state: 'New', cost: '', responsible_person: '', additional_information: '' },
             editingAsset: null,
@@ -9,8 +23,12 @@ const app = Vue.createApp({
     },
     async created() {
         this.assets = await (await fetch('http://localhost:8080/assets')).json();
+        this.users = await (await fetch('http://localhost:8080/users')).json();
     },
     methods: {
+        toggleShowLogin() {
+            this.showLogin = !this.showLogin;
+        },
         deleteAsset: async function (id) {
             const assetToDelete = this.assets.find(asset => asset.id === id);
             if (!assetToDelete) {
@@ -39,8 +57,8 @@ const app = Vue.createApp({
         
                 if (response.ok) {
                     const newAsset = await response.json();
-                    this.assets.push(newAsset); // Добавить актив в конец массива
-                    this.newAsset = { number: '', name: '', state: 'New', cost: '', responsible_person: '', additional_information: '' }; // Очистить поля ввода
+                    this.assets.push(newAsset);
+                    this.newAsset = { number: '', name: '', state: 'New', cost: '', responsible_person: '', additional_information: '' };
                 }
             } catch (error) {
                 console.error('Unable to add a new asset:', error);
@@ -77,6 +95,57 @@ const app = Vue.createApp({
             } catch (error) {
                 console.error('Unable to save edit:', error);
             }
+        },
+        async register() {
+            try {
+                const response = await fetch('http://localhost:8080/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ...this.registrationData, role: 'user' })
+                });
+        
+                if (response.ok) {
+                    this.registrationSuccess = true;
+                    this.registrationError = 'Registration successful!';
+                    this.currentRole = response.role;
+                    this.users.push({ username: this.registrationData.username });
+                    this.registrationData = { username: '', password: '' };
+                } else {
+                    this.registrationError = 'Registration failed. Please check your data.';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+            }
+            localStorage.setItem('isAuthenticated', this.isAuthenticated ? 'true' : 'false');
+            localStorage.setItem('role', this.currentRole);
+        },
+        async login() {
+            try {
+                const response = await fetch('http://localhost:8080/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(this.loginData)
+                });
+
+                if (response.ok) {
+                    this.isAuthenticated = true;
+                    this.loginData = { username: '', password: '' };
+                } else {
+                    this.loginError = 'Login failed. Please check your data.';
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+            }
+            localStorage.setItem('isAuthenticated', this.isAuthenticated ? 'true' : 'false');
+        },
+        async logout() {
+            localStorage.removeItem('isAuthenticated');
+            localStorage.removeItem('role');
+            this.isAuthenticated = false; 
         }
     }
 }).mount('#app');

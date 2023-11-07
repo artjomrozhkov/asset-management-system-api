@@ -18,6 +18,11 @@ const assets = [
     { id: 5, number: 105, name: "Keyboard", state: "New", cost: 29.99, responsible_person: "Eve Brown", additional_information: "Wireless keyboard" }
 ];
 
+const users = [
+    { username: 'user1', password: 'password1', role: 'user' },
+    { username: 'admin', password: 'admin', role: 'admin' },
+];
+
 app.get('/assets', (req, res) => {
     res.send(assets);
 });
@@ -93,4 +98,43 @@ app.put('/assets/:id', (req, res) => {
     assets[assetIndex] = updatedAsset;
 
     res.send(updatedAsset);
+});
+
+app.post('/login', (req, res) => {
+    const { username, password } = req.body;
+
+    if (!username || !password) {
+        return res.status(400).send({ error: 'Username and password are required' });
+    }
+
+    const user = users.find(u => u.username === username);
+
+    if (!user || user.password !== password) {
+        return res.status(401).send({ error: 'Invalid username or password' });
+    }
+
+    return res.send({ message: 'Login successful', role: user.role });
+});
+
+app.post('/register', (req, res) => {
+    const { username, password, role } = req.body; // Добавьте поле role
+
+    if (!username || !password || !role) {
+        return res.status(400).send({ error: 'Username, password, and role are required' });
+    }
+
+    const existingUser = users.find(u => u.username === username);
+
+    if (existingUser) {
+        return res.status(409).send({ error: 'User with this username already exists' });
+    }
+
+    const newUser = { username, password, role };
+    users.push(newUser);
+
+    return res.status(201).send({ message: 'Registration successful', role: newUser.role }); 
+});
+
+app.get('/users', (req, res) => {
+    res.send(users);
 });

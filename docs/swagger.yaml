@@ -129,3 +129,74 @@ paths:
                 error: Asset not found
       tags:
         - Assets
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        description: User registration data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user
+                password:
+                  type: string
+                  description: The user's password
+            example:
+              username: user123
+              password: secret123
+      responses:
+        '201':
+          description: User registered
+          content:
+            application/json:
+              example:
+                message: User registered successfully
+      tags:
+        - Users
+  /login:
+    post:
+      summary: User login
+      requestBody:
+        description: User login data
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  description: The username of the user
+                password:
+                  type: string
+                  description: The user's password
+            example:
+              username: user123
+              password: secret123
+      responses:
+        '200':
+          description: User logged in
+          content:
+            application/json:
+              example:
+                token: your_access_token_here
+      tags:
+        - Users
+  /users:
+    get:
+      summary: Get a list of all users
+      responses:
+        '200':
+          description: A list of users
+          content:
+            application/json:
+              example:
+                - username: user123
+                - username: user456
+      tags:
+        - Users
