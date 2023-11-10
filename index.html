@@ -53,23 +53,23 @@
                     <th>Cost</th>
                     <th>Responsible Person</th>
                     <th>Additional Information</th>
-                    <th>Actions</th>
+                    <th v-if="isAuthenticated && currentRole === 'admin'">Actions</th>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td><input v-model="newAsset.number" placeholder="Number"></td>
-                    <td><input v-model="newAsset.name" placeholder="Name"></td>
-                    <td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'"><input  v-model="newAsset.number" placeholder="Number"></td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.name" placeholder="Name"></td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'">
                         <select v-model="newAsset.state">
                             <option value="New">New</option>
                             <option value="Used">Used</option>
                         </select>
                     </td>
-                    <td><input v-model="newAsset.cost" placeholder="Cost"></td>
-                    <td><input v-model="newAsset.responsible_person" placeholder="Responsible Person"></td>
-                    <td><input v-model="newAsset.additional_information" placeholder="Additional Information"></td>
-                    <td><button @click="addAsset">Add Asset</button></td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.cost" placeholder="Cost"></td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.responsible_person" placeholder="Responsible Person"></td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.additional_information" placeholder="Additional Information"></td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'"><button @click="addAsset">Add Asset</button></td>
                 </tr>
                 <tr v-for="asset in assets" :key="asset.id">
                     <td>
@@ -120,15 +120,14 @@
                             {{ asset.additional_information }}
                         </span>
                     </td>
-                    <td>
+                    <td v-if="isAuthenticated && currentRole === 'admin'">
                         <button @click="isEditing ? saveEdit(asset) : editAsset(asset)">
                             {{ isEditing && editingAsset.id === asset.id ? 'Save' : 'Edit' }}
                         </button>
-                        <button @click="deleteAsset(asset.id)">Delete</button>
-                        <button @click="cancelEdit()" v-if="isEditing && editingAsset.id === asset.id">Cancel</button>
+                        <button v-if="isAuthenticated && currentRole === 'admin'" @click="deleteAsset(asset.id)">Delete</button>
+                        <button v-if="isAuthenticated && currentRole === 'admin' && isEditing && editingAsset.id === asset.id" @click="cancelEdit()">Cancel</button>
                     </td>
                 </tr>
-                
             </tbody>
         </table>
     </div>
@@ -162,3 +161,9 @@
 <script src="rest-client.js"></script>
 </body>
 </html>
+
+<!-- Вся информация почти была взята из интернета, под основу был взят мой проект, который мы делали https://github.com/artjomrozhkov/games-api.
+Понятное дело с какой то частью кода мне помогал ChatGPT, но не весь код был написан через него.
+По сути тут 75% кода точно сделано с помощью проекта на GitHub -->
+
+

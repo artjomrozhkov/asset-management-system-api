@@ -132,7 +132,9 @@ const app = Vue.createApp({
                 });
 
                 if (response.ok) {
+                    const responseData = await response.json();
                     this.isAuthenticated = true;
+                    this.currentRole = responseData.role;
                     this.loginData = { username: '', password: '' };
                 } else {
                     this.loginError = 'Login failed. Please check your data.';
@@ -141,11 +143,13 @@ const app = Vue.createApp({
                 console.error('Login error:', error);
             }
             localStorage.setItem('isAuthenticated', this.isAuthenticated ? 'true' : 'false');
+            localStorage.setItem('role', this.currentRole);
         },
         async logout() {
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('role');
-            this.isAuthenticated = false; 
+            this.isAuthenticated = false;
+            this.currentRole = null; // Добавьте эту строку
         }
     }
 }).mount('#app');

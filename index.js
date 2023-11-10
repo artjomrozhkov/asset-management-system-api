@@ -19,7 +19,7 @@ const assets = [
 ];
 
 const users = [
-    { username: 'user1', password: 'password1', role: 'user' },
+    { username: 'artjom', password: 'rozkov', role: 'admin' },
     { username: 'admin', password: 'admin', role: 'admin' },
 ];
 
