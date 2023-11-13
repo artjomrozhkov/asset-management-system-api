@@ -2,18 +2,18 @@ const app = Vue.createApp({
     data() {
         return {
             isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
-            currentRole: localStorage.getItem('role'), 
+            currentRole: localStorage.getItem('role'),
             registrationSuccess: false,
             showLogin: false,
             registrationData: {
                 username: '',
+                email: '',
                 password: ''
             },
             loginData: {
-                username: '',
+                email: '',
                 password: ''
             },
-            registrationError: '',
             loginError: '',
             assets: [],
             newAsset: { number: '', name: '', state: 'New', cost: '', responsible_person: '', additional_information: '' },
@@ -24,6 +24,9 @@ const app = Vue.createApp({
     async created() {
         this.assets = await (await fetch('http://localhost:8080/assets')).json();
         this.users = await (await fetch('http://localhost:8080/users')).json();
+        if (!this.isAuthenticated && window.location.pathname !== '/login.html' && window.location.pathname !== '/register.html') {
+            window.location.href = '/login.html';
+        }
     },
     methods: {
         toggleShowLogin() {
@@ -96,48 +99,28 @@ const app = Vue.createApp({
                 console.error('Unable to save edit:', error);
             }
         },
-        async register() {
-            try {
-                const response = await fetch('http://localhost:8080/register', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ ...this.registrationData, role: 'user' })
-                });
-        
-                if (response.ok) {
-                    this.registrationSuccess = true;
-                    this.registrationError = 'Registration successful!';
-                    this.currentRole = response.role;
-                    this.users.push({ username: this.registrationData.username });
-                    this.registrationData = { username: '', password: '' };
-                } else {
-                    this.registrationError = 'Registration failed. Please check your data.';
-                }
-            } catch (error) {
-                console.error('Registration error:', error);
-            }
-            localStorage.setItem('isAuthenticated', this.isAuthenticated ? 'true' : 'false');
-            localStorage.setItem('role', this.currentRole);
-        },
         async login() {
+            console.log('Button clicked');
             try {
                 const response = await fetch('http://localhost:8080/login', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(this.loginData)
+                    body: JSON.stringify(this.loginData),
                 });
-
+        
                 if (response.ok) {
                     const responseData = await response.json();
                     this.isAuthenticated = true;
                     this.currentRole = responseData.role;
-                    this.loginData = { username: '', password: '' };
+                    this.loginData = { email: '', password: '' };
+        
+                    if (this.isAuthenticated) {
+                        window.location.href = 'http://localhost:8080/index.html';
+                    }
                 } else {
-                    this.loginError = 'Login failed. Please check your data.';
+                    this.loginError = 'Login failed. Please check your email and password.';
                 }
             } catch (error) {
                 console.error('Login error:', error);
@@ -145,11 +128,46 @@ const app = Vue.createApp({
             localStorage.setItem('isAuthenticated', this.isAuthenticated ? 'true' : 'false');
             localStorage.setItem('role', this.currentRole);
         },
+        async register() {
+            try {
+                const response = await fetch('http://localhost:8080/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(this.registrationData),
+                });
+        
+                if (response.ok) {
+                    const responseData = await response.json();
+                    this.registrationSuccess = true;
+                    this.currentRole = responseData.role;
+        
+                    this.users.push({
+                        username: this.registrationData.username,
+                        email: this.registrationData.email,
+                        password: this.registrationData.password,
+                        role: responseData.role,
+                    });
+        
+                    this.registrationData = { username: '', email: '', password: '' };
+                    this.registrationError = null;
+                } else {
+                    this.registrationSuccess = false;
+                    this.registrationError = 'Registration failed. Please check your data.';
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                this.registrationSuccess = false;
+                this.registrationError = 'Registration failed. Please try again later.';
+            }
+        },
         async logout() {
             localStorage.removeItem('isAuthenticated');
             localStorage.removeItem('role');
             this.isAuthenticated = false;
-            this.currentRole = null; // Добавьте эту строку
+            this.currentRole = null;
+            window.location.href = 'http://localhost:8080/login.html';
         }
     }
 }).mount('#app');

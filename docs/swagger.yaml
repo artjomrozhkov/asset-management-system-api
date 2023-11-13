@@ -143,11 +143,16 @@ paths:
                 username:
                   type: string
                   description: The username of the user
+                email:
+                  type: string
+                  format: email
+                  description: The email address of the user
                 password:
                   type: string
                   description: The user's password
             example:
               username: user123
+              email: user123@example.com
               password: secret123
       responses:
         '201':
@@ -169,14 +174,15 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                email:
                   type: string
-                  description: The username of the user
+                  format: email
+                  description: The email address of the user
                 password:
                   type: string
                   description: The user's password
             example:
-              username: user123
+              email: user123@example.com
               password: secret123
       responses:
         '200':

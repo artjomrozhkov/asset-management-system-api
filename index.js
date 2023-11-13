@@ -19,8 +19,8 @@ const assets = [
 ];
 
 const users = [
-    { username: 'artjom', password: 'rozkov', role: 'admin' },
-    { username: 'admin', password: 'admin', role: 'admin' },
+    { username: 'artjom', email:'artjom@gmail.com', password: 'rozkov', role: 'admin' },
+    { username: 'admin', email:'admin@gmail.com', password: 'admin', role: 'admin' },
 ];
 
 app.get('/assets', (req, res) => {
@@ -101,38 +101,38 @@ app.put('/assets/:id', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).send({ error: 'Username and password are required' });
+    if (!email || !password) {
+        return res.status(400).send({ error: 'Email address and password are required' });
     }
 
-    const user = users.find(u => u.username === username);
+    const user = users.find(u => u.email === email);
 
     if (!user || user.password !== password) {
-        return res.status(401).send({ error: 'Invalid username or password' });
+        return res.status(401).send({ error: 'Invalid email address or password' });
     }
 
     return res.send({ message: 'Login successful', role: user.role });
 });
 
 app.post('/register', (req, res) => {
-    const { username, password, role } = req.body; // Добавьте поле role
+    const { username, email, password, role } = req.body;
 
-    if (!username || !password || !role) {
-        return res.status(400).send({ error: 'Username, password, and role are required' });
+    if (!username || !email || !password || !role) {
+        return res.status(400).send({ error: 'Username, email address, password, and role are required' });
     }
 
-    const existingUser = users.find(u => u.username === username);
+    const existingUser = users.find(u => u.email === email || u.username === username);
 
     if (existingUser) {
-        return res.status(409).send({ error: 'User with this username already exists' });
+        return res.status(409).send({ error: 'User with this email or username already exists' });
     }
 
-    const newUser = { username, password, role };
+    const newUser = { username, email, password, role };
     users.push(newUser);
 
-    return res.status(201).send({ message: 'Registration successful', role: newUser.role }); 
+    return res.status(201).send({ message: 'Registration successful', role: newUser.role });
 });
 
 app.get('/users', (req, res) => {

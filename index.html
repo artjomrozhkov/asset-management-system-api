@@ -6,131 +6,100 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Asset Management System</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link href="/css/index.css" rel="stylesheet">
 </head>
 <body>
-<header class="bg-primary text-white p-4" >
-    <center>
-        Asset Management System
-    </center>
+<header>
+    <h1>Asset Management System</h1>
 </header>
-<br>    
 <div id="app">
-    <div v-if="!isAuthenticated">
-        <center>
-            <h2>Login</h2>
-        </center>
-        <center>
-            <input v-model="loginData.username" placeholder="Username">
-            <input v-model="loginData.password" style="margin-left: 5px;" type="password" placeholder="Password">
-            <button @click="login" style="margin-left: 5px; background-color: #007bff; color: #fff; border: none; padding: 5px 20px; border-radius: 5px; cursor: pointer;">Login</button>
-
-            <p v-if="loginError">{{ loginError }}</p>
-        </center>
-    </div>
-    <div v-if="!isAuthenticated">
-        <center>
-            <br>
-            <h2>Registration</h2>
-        </center>
-        <center>
-            <input v-model="registrationData.username" placeholder="Username">
-            <input v-model="registrationData.password" type="password" style="margin-left: 5px;" placeholder="Password">
-            <button @click="register" style="margin-left: 5px; background-color: #007bff; color: #fff; border: none; padding: 5px 20px; border-radius: 5px; cursor: pointer;">Register</button>
-            <p v-if="registrationError">{{ registrationError }}</p>
-        </center>
-    </div>
-    <div v-if="isAuthenticated">
-        <center>
-            <button @click="logout">Logout</button>
-        </center>
-        <br>
-        <table id="assetsTable" class="table table-striped table-bordered">
-            <thead>
-                <tr>
-                    <th>Number</th>
-                    <th>Name</th>
-                    <th>State</th>
-                    <th>Cost</th>
-                    <th>Responsible Person</th>
-                    <th>Additional Information</th>
-                    <th v-if="isAuthenticated && currentRole === 'admin'">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td v-if="isAuthenticated && currentRole === 'admin'"><input  v-model="newAsset.number" placeholder="Number"></td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.name" placeholder="Name"></td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'">
-                        <select v-model="newAsset.state">
-                            <option value="New">New</option>
-                            <option value="Used">Used</option>
-                        </select>
-                    </td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.cost" placeholder="Cost"></td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.responsible_person" placeholder="Responsible Person"></td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'"><input v-model="newAsset.additional_information" placeholder="Additional Information"></td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'"><button @click="addAsset">Add Asset</button></td>
-                </tr>
-                <tr v-for="asset in assets" :key="asset.id">
-                    <td>
-                        <span v-if="isEditing && editingAsset.id === asset.id">
-                            <input v-model="editingAsset.number">
-                        </span>
-                        <span v-else>
-                            {{ asset.number }}
-                        </span>
-                    </td>
-                    <td>
-                        <span v-if="isEditing && editingAsset.id === asset.id">
-                            <input v-model="editingAsset.name">
-                        </span>
-                        <span v-else>
-                            {{ asset.name }}
-                        </span>
-                    </td>
-                    <td>
-                        <span v-if="isEditing && editingAsset.id === asset.id">
-                            <input v-model="editingAsset.state">
-                        </span>
-                        <span v-else>
-                            {{ asset.state }}
-                        </span>
-                    </td>
-                    <td>
-                        <span v-if="isEditing && editingAsset.id === asset.id">
-                            <input v-model="editingAsset.cost">
-                        </span>
-                        <span v-else>
-                            {{ asset.cost }}
-                        </span>
-                    </td>
-                    <td>
-                        <span v-if="isEditing && editingAsset.id === asset.id">
-                            <input v-model="editingAsset.responsible_person">
-                        </span>
-                        <span v-else>
-                            {{ asset.responsible_person }}
-                        </span>
-                    </td>
-                    <td>
-                        <span v-if="isEditing && editingAsset.id === asset.id">
-                            <input v-model="editingAsset.additional_information">
-                        </span>
-                        <span v-else>
-                            {{ asset.additional_information }}
-                        </span>
-                    </td>
-                    <td v-if="isAuthenticated && currentRole === 'admin'">
-                        <button @click="isEditing ? saveEdit(asset) : editAsset(asset)">
-                            {{ isEditing && editingAsset.id === asset.id ? 'Save' : 'Edit' }}
-                        </button>
-                        <button v-if="isAuthenticated && currentRole === 'admin'" @click="deleteAsset(asset.id)">Delete</button>
-                        <button v-if="isAuthenticated && currentRole === 'admin' && isEditing && editingAsset.id === asset.id" @click="cancelEdit()">Cancel</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <table id="assetsTable" class="table table-bordered">
+        <button v-if="isAuthenticated" @click="logout" class="btn-logout">Logout</button>
+        <thead>
+            <tr>
+                <th>Number</th>
+                <th>Name</th>
+                <th>State</th>
+                <th>Cost</th>
+                <th>Responsible Person</th>
+                <th>Additional Information</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input  v-model="newAsset.number" placeholder="Number"></td>
+                <td><input v-model="newAsset.name" placeholder="Name"></td>
+                <td>
+                    <select v-model="newAsset.state">
+                        <option value="New">New</option>
+                        <option value="Used">Used</option>
+                    </select>
+                </td>
+                <td><input v-model="newAsset.cost" placeholder="Cost"></td>
+                <td><input v-model="newAsset.responsible_person" placeholder="Responsible Person"></td>
+                <td><input v-model="newAsset.additional_information" placeholder="Additional Information"></td>
+                <td><button @click="addAsset">Add Asset</button></td>
+            </tr>
+            <tr v-for="asset in assets" :key="asset.id">
+                <td>
+                    <span v-if="isEditing && editingAsset.id === asset.id">
+                        <input v-model="editingAsset.number">
+                    </span>
+                    <span v-else>
+                        {{ asset.number }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="isEditing && editingAsset.id === asset.id">
+                        <input v-model="editingAsset.name">
+                    </span>
+                    <span v-else>
+                        {{ asset.name }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="isEditing && editingAsset.id === asset.id">
+                        <input v-model="editingAsset.state">
+                    </span>
+                    <span v-else>
+                        {{ asset.state }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="isEditing && editingAsset.id === asset.id">
+                        <input v-model="editingAsset.cost">
+                    </span>
+                    <span v-else>
+                        {{ asset.cost }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="isEditing && editingAsset.id === asset.id">
+                        <input v-model="editingAsset.responsible_person">
+                    </span>
+                    <span v-else>
+                        {{ asset.responsible_person }}
+                    </span>
+                </td>
+                <td>
+                    <span v-if="isEditing && editingAsset.id === asset.id">
+                        <input v-model="editingAsset.additional_information">
+                    </span>
+                    <span v-else>
+                        {{ asset.additional_information }}
+                    </span>
+                </td>
+                <td>
+                    <button @click="isEditing ? saveEdit(asset) : editAsset(asset)">
+                        {{ isEditing && editingAsset.id === asset.id ? 'Save' : 'Edit' }}
+                    </button>
+                    <button @click="deleteAsset(asset.id)">Delete</button>
+                    <button v-if="isEditing && editingAsset.id === asset.id" @click="cancelEdit()">Cancel</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 <div id="assetInfoModal" class="modal fade" tabindex="-1" role="dialog">
     <div class="modal-dialog">
