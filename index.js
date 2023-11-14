@@ -1,4 +1,5 @@
 const express = require('express');
+const fs = require('fs');
 const app = express();
 const port = 8080;
 const cors = require('cors');
@@ -18,12 +19,14 @@ const assets = [
     { id: 5, number: 105, name: "Keyboard", state: "New", cost: 29.99, responsible_person: "Eve Brown", additional_information: "Wireless keyboard" }
 ];
 
-const users = [
-    { username: 'artjom', email:'artjom@gmail.com', password: 'rozkov', role: 'admin' },
-    { username: 'admin', email:'admin@gmail.com', password: 'admin', role: 'admin' },
-];
+const usersData = fs.readFileSync('users.json', 'utf-8');
+const users = JSON.parse(usersData);
 
 app.get('/assets', (req, res) => {
+    res.send(assets);
+});
+
+app.get('/user-assets', (req, res) => {
     res.send(assets);
 });
 
@@ -113,7 +116,8 @@ app.post('/login', (req, res) => {
         return res.status(401).send({ error: 'Invalid email address or password' });
     }
 
-    return res.send({ message: 'Login successful', role: user.role });
+    console.log(user);
+    return res.send({ assets: user.assets, message: 'Login successful', role: user.role });
 });
 
 app.post('/register', (req, res) => {

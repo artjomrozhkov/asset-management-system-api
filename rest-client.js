@@ -3,6 +3,7 @@ const app = Vue.createApp({
         return {
             isAuthenticated: localStorage.getItem('isAuthenticated') === 'true',
             currentRole: localStorage.getItem('role'),
+            userAssets: localStorage.getItem('userAssets'),
             registrationSuccess: false,
             showLogin: false,
             registrationData: {
@@ -11,6 +12,7 @@ const app = Vue.createApp({
                 password: ''
             },
             loginData: {
+                assets: [],
                 email: '',
                 password: ''
             },
@@ -22,11 +24,18 @@ const app = Vue.createApp({
         };
     },
     async created() {
-        this.assets = await (await fetch('http://localhost:8080/assets')).json();
         this.users = await (await fetch('http://localhost:8080/users')).json();
         if (!this.isAuthenticated && window.location.pathname !== '/login.html' && window.location.pathname !== '/register.html') {
             window.location.href = '/login.html';
         }
+
+        if (this.currentRole == 'admin') {
+            this.assets = await (await fetch('http://localhost:8080/assets')).json();
+        } else {
+            this.assets = JSON.parse(this.userAssets);
+        }
+
+        console.log(this.userAssets);
     },
     methods: {
         toggleShowLogin() {
@@ -114,6 +123,7 @@ const app = Vue.createApp({
                     this.isAuthenticated = true;
                     this.currentRole = responseData.role;
                     this.loginData = { email: '', password: '' };
+                    localStorage.setItem('userAssets', JSON.stringify(responseData.assets));
         
                     if (this.isAuthenticated) {
                         alert('Login successful! You are now logged in.');
