@@ -23,11 +23,11 @@
                 <th>Cost</th>
                 <th>Responsible Person</th>
                 <th>Additional Information</th>
-                <th>Actions</th>
+                <th v-if="isAuthenticated && currentRole === 'admin'">Actions</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
+            <tr v-if="isAuthenticated && currentRole === 'admin'">
                 <td><input  v-model="newAsset.number" placeholder="Number"></td>
                 <td><input v-model="newAsset.name" placeholder="Name"></td>
                 <td>
@@ -43,6 +43,8 @@
             </tr>
             <tr v-for="asset in assets" :key="asset.id">
                 <td>
+                    <button @click="moveRow(asset, -1)" class="arrow-button">▲</button>
+                    <button @click="moveRow(asset, 1)" class="arrow-button">▼</button>
                     <span v-if="isEditing && editingAsset.id === asset.id">
                         <input v-model="editingAsset.number">
                     </span>
@@ -90,7 +92,7 @@
                         {{ asset.additional_information }}
                     </span>
                 </td>
-                <td>
+                <td v-if="isAuthenticated && currentRole === 'admin'">
                     <button @click="isEditing ? saveEdit(asset) : editAsset(asset)">
                         {{ isEditing && editingAsset.id === asset.id ? 'Save' : 'Edit' }}
                     </button>

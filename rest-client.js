@@ -100,7 +100,6 @@ const app = Vue.createApp({
             }
         },
         async login() {
-            console.log('Button clicked');
             try {
                 const response = await fetch('http://localhost:8080/login', {
                     method: 'POST',
@@ -117,10 +116,11 @@ const app = Vue.createApp({
                     this.loginData = { email: '', password: '' };
         
                     if (this.isAuthenticated) {
+                        alert('Login successful! You are now logged in.');
                         window.location.href = 'http://localhost:8080/index.html';
                     }
                 } else {
-                    this.loginError = 'Login failed. Please check your email and password.';
+                    alert('Login failed. Please check your email and password.');
                 }
             } catch (error) {
                 console.error('Login error:', error);
@@ -133,34 +133,31 @@ const app = Vue.createApp({
                 const response = await fetch('http://localhost:8080/register', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
+                        'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify(this.registrationData),
+                    body: JSON.stringify({ ...this.registrationData, role: 'user' })
                 });
         
                 if (response.ok) {
                     const responseData = await response.json();
+        
+                    this.users.push({ username: this.registrationData.username, email: this.registrationData.email });
+                    
                     this.registrationSuccess = true;
+                    alert('Registration successful!');
+                    window.location.href = 'http://localhost:8080/login.html';
                     this.currentRole = responseData.role;
-        
-                    this.users.push({
-                        username: this.registrationData.username,
-                        email: this.registrationData.email,
-                        password: this.registrationData.password,
-                        role: responseData.role,
-                    });
-        
                     this.registrationData = { username: '', email: '', password: '' };
-                    this.registrationError = null;
                 } else {
-                    this.registrationSuccess = false;
-                    this.registrationError = 'Registration failed. Please check your data.';
+                    const responseData = await response.json();
+                    alert(`Registration failed. ${responseData.error}`);
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                this.registrationSuccess = false;
                 this.registrationError = 'Registration failed. Please try again later.';
             }
+            localStorage.setItem('isAuthenticated', this.isAuthenticated ? 'true' : 'false');
+            localStorage.setItem('role', this.currentRole);
         },
         async logout() {
             localStorage.removeItem('isAuthenticated');
@@ -168,6 +165,15 @@ const app = Vue.createApp({
             this.isAuthenticated = false;
             this.currentRole = null;
             window.location.href = 'http://localhost:8080/login.html';
-        }
+        },
+        moveRow(asset, offset) {
+            const index = this.assets.findIndex(a => a.id === asset.id);
+            const newIndex = index + offset;
+    
+            if (newIndex >= 0 && newIndex < this.assets.length) {
+                const movedAsset = this.assets.splice(index, 1)[0];
+                this.assets.splice(newIndex, 0, movedAsset);
+            }
+        },
     }
 }).mount('#app');

@@ -1,0 +1,22 @@
+[
+    {
+      "id": 1,
+      "username": "artjom",
+      "email": "artjom@gmail.com",
+      "password": "rozkov",
+      "role": "admin",
+      "assets": [
+        { "id": 1, "number": 101, "name": "Laptop", "state": "New", "cost": 999.99, "responsible_person": "John Doe", "additional_information": "High-performance laptop" }
+      ]
+    },
+    {
+      "id": 2,
+      "username": "admin",
+      "email": "admin@gmail.com",
+      "password": "admin",
+      "role": "admin",
+      "assets": [
+        { "id": 2, "number": 105, "name": "Keyboard", "state": "New", "cost": 29.99, "responsible_person": "Eve Brown", "additional_information": "Wireless keyboard" }
+      ]
+    }
+  ]

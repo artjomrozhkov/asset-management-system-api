@@ -117,10 +117,10 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-    const { username, email, password, role } = req.body;
+    const { username, email, password } = req.body;
 
-    if (!username || !email || !password || !role) {
-        return res.status(400).send({ error: 'Username, email address, password, and role are required' });
+    if (!username || !email || !password) {
+        return res.status(400).send({ error: 'Username, email, and password are required' });
     }
 
     const existingUser = users.find(u => u.email === email || u.username === username);
@@ -129,7 +129,7 @@ app.post('/register', (req, res) => {
         return res.status(409).send({ error: 'User with this email or username already exists' });
     }
 
-    const newUser = { username, email, password, role };
+    const newUser = { username, email, password, role: 'user' }; 
     users.push(newUser);
 
     return res.status(201).send({ message: 'Registration successful', role: newUser.role });
